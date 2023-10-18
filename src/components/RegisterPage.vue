@@ -59,7 +59,7 @@ const register = () => {
     .then((data) => {
       const userData = {
         fullname: 'Leo Burns',
-        avatar: 'https://randomuser.me/api/portraits/men/85.jpg',
+        avatar: 'https://randomuser.me/api/portraits/men/36.jpg',
         cards: {
           0: {
             balance: 812,

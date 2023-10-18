@@ -6,7 +6,7 @@ module.exports = {
     './node_modules/flowbite/**/*.js'
   ],
   plugins: [
-    require('flowbite'),
+    // require('flowbite'),
     require("@tailwindcss/typography"),
     require('daisyui')
   ],
