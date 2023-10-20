@@ -5,7 +5,7 @@
       <label for="my-drawer-1" class="btn btn-primary drawer-button lg:hidden">Меню</label>
       <div class="divider lg:hidden"></div>
 
-      <div class="flex flex-col" :key="chatShow" v-if="messages">
+      <div class="flex flex-col" v-if="messages">
         <div class="card max-h-96 overflow-auto shadow-xl">
           <div v-for="msg in messages" v-bind:key="msg">
             <div class="chat chat-end" v-if="msg[2]">
@@ -39,8 +39,7 @@
           <div class="input-group">
             <input @keyup.enter="sendMessage(msgToSend, userId)" type="text" placeholder="Введите сообщение"
               class="input input-bordered" v-model="msgToSend" />
-            <button class="btn" @click.enter="sendMessage(msgToSend, userId)"
-              @click="sendMessage(msgToSend, userId)">Отправить</button>
+            <button class="btn" @click="sendMessage(msgToSend, userId)">Отправить</button>
             <button class="btn btn-neutral" @click="clearChat">Очистить чат</button>
           </div>
         </div>
@@ -70,10 +69,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref, toRaw } from 'vue';
+import { onBeforeMount, ref, toRaw } from 'vue';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { getFirestore, doc, collection, Timestamp, setDoc, deleteDoc } from 'firebase/firestore';
-import { useCollection, useDocument } from 'vuefire'
+import { useCollection, useDocument } from 'vuefire';
 import router from '@/router';
 
 const isLoggedIn = ref(false);
@@ -88,9 +87,8 @@ let senders = [];
 let messages = [];
 let chat;
 let userId;
-let chatShow = ref(0);
 
-onMounted(() => {
+onBeforeMount(() => {
   auth = getAuth();
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -136,24 +134,27 @@ const profileRoute = () => {
 
 const sendMessage = async (msg, id) => {
   let date = Timestamp.now()
-  console.log(date.toMillis().toString())
   await setDoc(doc(db, 'chat', date.toMillis().toString()), {
     message: msg,
     user: id,
     time: date
   });
-  chatShow.value += 1;
-  console.log(chatShow);
-  return chatShow;
 };
 
 const clearChat = async () => {
-  let chat = useCollection(collection(db, 'chat'));
-  for (let msg in chat.value) {
-    let id = chat.value[msg].id;
-    console.log(id);
-    await deleteDoc(doc(db, 'chat', id.toString()));
-    console.log('удалено');
+  let chat;
+  let msg;
+  let id;
+  let len;
+  chat = useCollection(collection(db, 'chat'));
+  len = toRaw(chat.value).length;
+  while (parseInt(len) != 0) {
+    for (msg in chat.value) {
+      id = chat.value[msg].id;
+      await deleteDoc(doc(db, 'chat', id.toString()));
+    }
+    chat = useCollection(collection(db, 'chat'));
+    len = toRaw(chat.value).length;
   }
 };
 </script>

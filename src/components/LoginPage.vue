@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 const email = ref('');
@@ -59,7 +59,7 @@ const router = useRouter();
 const isLoggedIn = ref(false);
 
 let auth;
-onMounted(() => {
+onBeforeMount(() => {
   auth = getAuth();
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -76,8 +76,6 @@ const login = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
     .then((data) => {
       console.log('Successfully signed in!')
-      console.log(auth.currentUser)
-      console.log(auth.currentUser.uid)
       router.push('/')
     })
     .catch((error) => {

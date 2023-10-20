@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { getFirestore, doc, collection, setDoc } from 'firebase/firestore';
 import { useDocument } from 'vuefire'
@@ -83,7 +83,7 @@ let userData;
 let newName = ref();
 let newAvatar = ref();
 
-onMounted(() => {
+onBeforeMount(() => {
   auth = getAuth();
   onAuthStateChanged(auth, (user) => {
     if (user) {
